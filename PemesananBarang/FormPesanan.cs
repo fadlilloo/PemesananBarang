@@ -23,6 +23,17 @@ namespace PemesananBarang
             InitializeComponent();
 
             AturDataGridView();
+
+            cmbUpdateStatus.Items.Clear();
+            cmbUpdateStatus.Items.Add("Menunggu");////
+            cmbUpdateStatus.Items.Add("Diproses");
+            cmbUpdateStatus.Items.Add("Selesai");
+            cmbUpdateStatus.Items.Add("Dibatalkan");
+
+            cmbUpdateStatus.SelectedIndex = 0;
+
+            // LANGSUNG TAMPILKAN DATA PESANAN
+            LoadPesanan();
         }
 
 
@@ -67,110 +78,143 @@ namespace PemesananBarang
 
         private void LoadPesanan()
         {
-            MySqlConnection connection =
-                Koneksi.GetConnection();
-
             try
             {
-                connection.Open();
+                using (MySqlConnection conn = Koneksi.GetConnection())
+                {
+                    conn.Open();
 
-                string query =
-                    "SELECT " +
-                    "p.id_pesanan AS 'ID Pesanan', " +
-                    "u.nama AS 'Nama Pemesan', " +
-                    "b.nama_barang AS 'Nama Barang', " +
-                    "d.jumlah AS 'Jumlah', " +
-                    "d.harga AS 'Harga', " +
-                    "d.subtotal AS 'Subtotal', " +
-                    "p.status AS 'Status', " +
-                    "p.tanggal_pesanan AS 'Tanggal Pesanan' " +
+                    string query = @"
+                SELECT
+                    p.id_pesanan AS 'ID Pesanan',
+                    p.nama_pemesan AS 'Nama Pemesan',
+                    b.nama_barang AS 'Nama Barang',
+                    d.jumlah AS 'Jumlah',
+                    d.harga AS 'Harga',
+                    d.subtotal AS 'Subtotal',
+                    p.status AS 'Status'
+                FROM pesanan p
+                INNER JOIN detail_pesanan d
+                    ON p.id_pesanan = d.id_pesanan
+                INNER JOIN barang b
+                    ON d.id_barang = b.id_barang
+                ORDER BY p.id_pesanan ASC";
 
-                    "FROM pesanan p " +
+                    using (MySqlCommand cmd =
+                        new MySqlCommand(query, conn))
+                    {
+                        MySqlDataAdapter adapter =
+                            new MySqlDataAdapter(cmd);
 
-                    "INNER JOIN users u " +
-                    "ON p.id_user = u.id_user " +
+                        DataTable dt = new DataTable();
 
-                    "INNER JOIN detail_pesanan d " +
-                    "ON p.id_pesanan = d.id_pesanan " +
+                        adapter.Fill(dt);
 
-                    "INNER JOIN barang b " +
-                    "ON d.id_barang = b.id_barang " +
+                        // Tampilkan data ke DGV
+                        dgvPesanan.DataSource = dt;
+                    }
+                }
 
-                    "ORDER BY p.id_pesanan DESC";
+                // Sembunyikan ID Pesanan
+                if (dgvPesanan.Columns.Contains("ID Pesanan"))
+                {
+                    dgvPesanan.Columns["ID Pesanan"].Visible = false;
+                }
 
+                // Hapus kolom No lama
+                if (dgvPesanan.Columns.Contains("No"))
+                {
+                    dgvPesanan.Columns.Remove("No");
+                }
 
-                MySqlDataAdapter adapter =
-                    new MySqlDataAdapter(
-                        query,
-                        connection
-                    );
+                // Buat kolom No
+                DataGridViewTextBoxColumn kolomNo =
+                    new DataGridViewTextBoxColumn();
 
+                kolomNo.Name = "No";
+                kolomNo.HeaderText = "No";
+                kolomNo.ReadOnly = true;
 
-                DataTable table =
-                    new DataTable();
+                dgvPesanan.Columns.Insert(0, kolomNo);
 
+                // Isi nomor 1, 2, 3, dst.
+                for (int i = 0; i < dgvPesanan.Rows.Count; i++)
+                {
+                    dgvPesanan.Rows[i].Cells["No"].Value = i + 1;
+                }
 
-                adapter.Fill(table);
+                // ==========================================
+                // ATUR AGAR KOLOM TERLIHAT
+                // ==========================================
 
+                dgvPesanan.AutoSizeColumnsMode =
+                    DataGridViewAutoSizeColumnsMode.Fill;
 
-                dgvPesanan.DataSource =
-                    null;
+                dgvPesanan.AutoSizeRowsMode =
+                    DataGridViewAutoSizeRowsMode.None;
 
-                dgvPesanan.DataSource =
-                    table;
+                dgvPesanan.RowTemplate.Height = 30;
 
+                dgvPesanan.ColumnHeadersDefaultCellStyle.Alignment =
+                    DataGridViewContentAlignment.MiddleCenter;
+
+                dgvPesanan.DefaultCellStyle.Alignment =
+                    DataGridViewContentAlignment.MiddleLeft;
+
+                // Kolom tertentu rata tengah
+                if (dgvPesanan.Columns.Contains("No"))
+                {
+                    dgvPesanan.Columns["No"]
+                        .DefaultCellStyle.Alignment =
+                        DataGridViewContentAlignment.MiddleCenter;
+                }
+
+                if (dgvPesanan.Columns.Contains("Jumlah"))
+                {
+                    dgvPesanan.Columns["Jumlah"]
+                        .DefaultCellStyle.Alignment =
+                        DataGridViewContentAlignment.MiddleCenter;
+                }
+
+                if (dgvPesanan.Columns.Contains("Status"))
+                {
+                    dgvPesanan.Columns["Status"]
+                        .DefaultCellStyle.Alignment =
+                        DataGridViewContentAlignment.MiddleCenter;
+                }
 
                 // Format harga
-
                 if (dgvPesanan.Columns.Contains("Harga"))
                 {
                     dgvPesanan.Columns["Harga"]
-                        .DefaultCellStyle.Format =
-                        "N0";
+                        .DefaultCellStyle.Format = "N0";
                 }
 
-
                 // Format subtotal
-
                 if (dgvPesanan.Columns.Contains("Subtotal"))
                 {
                     dgvPesanan.Columns["Subtotal"]
-                        .DefaultCellStyle.Format =
-                        "N0";
+                        .DefaultCellStyle.Format = "N0";
                 }
 
+                // Pastikan DGV bisa memilih baris
+                dgvPesanan.SelectionMode =
+                    DataGridViewSelectionMode.FullRowSelect;
 
-                // Format tanggal
-
-                if (dgvPesanan.Columns.Contains("Tanggal Pesanan"))
-                {
-                    dgvPesanan.Columns["Tanggal Pesanan"]
-                        .DefaultCellStyle.Format =
-                        "dd-MM-yyyy HH:mm";
-                }
-
-
-                dgvPesanan.ClearSelection();
+                dgvPesanan.MultiSelect = false;
+                dgvPesanan.ReadOnly = true;
+                dgvPesanan.AllowUserToAddRows = false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Gagal mengambil data pesanan.\n\n" +
+                    "Gagal menampilkan data pesanan:\n\n" +
                     ex.Message,
                     "Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                }
+                    MessageBoxIcon.Error);
             }
         }
-
 
         // =====================================
         // FORM LOAD
@@ -191,125 +235,104 @@ namespace PemesananBarang
 
         private void CariPesanan()
         {
-            string kataKunci =
-                txtCari.Text.Trim();
-
-
-            // Jika TextBox kosong,
-            // tampilkan semua data
-
-            if (string.IsNullOrWhiteSpace(kataKunci))
-            {
-                LoadPesanan();
-
-                return;
-            }
-
-
-            MySqlConnection connection =
-                Koneksi.GetConnection();
-
-
             try
             {
-                connection.Open();
+                string keyword = txtCari.Text.Trim();
 
+                using (MySqlConnection conn = Koneksi.GetConnection())
+                {
+                    conn.Open();
 
-                string query =
-                    "SELECT " +
-                    "p.id_pesanan AS 'ID Pesanan', " +
-                    "u.nama AS 'Nama Pemesan', " +
-                    "b.nama_barang AS 'Nama Barang', " +
-                    "d.jumlah AS 'Jumlah', " +
-                    "d.harga AS 'Harga', " +
-                    "d.subtotal AS 'Subtotal', " +
-                    "p.status AS 'Status', " +
-                    "p.tanggal_pesanan AS 'Tanggal Pesanan' " +
+                    string query = @"
+                SELECT
+                    p.id_pesanan AS 'ID Pesanan',
+                    p.nama_pemesan AS 'Nama Pemesan',
+                    b.nama_barang AS 'Nama Barang',
+                    d.jumlah AS 'Jumlah',
+                    d.harga AS 'Harga',
+                    d.subtotal AS 'Subtotal',
+                    p.status AS 'Status'
+                FROM pesanan p
+                INNER JOIN detail_pesanan d
+                    ON p.id_pesanan = d.id_pesanan
+                INNER JOIN barang b
+                    ON d.id_barang = b.id_barang
+                WHERE
+                    p.nama_pemesan LIKE @keyword
+                    OR b.nama_barang LIKE @keyword
+                    OR p.status LIKE @keyword
+                ORDER BY p.id_pesanan ASC";
 
-                    "FROM pesanan p " +
+                    using (MySqlCommand cmd =
+                        new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue(
+                            "@keyword",
+                            "%" + keyword + "%");
 
-                    "INNER JOIN users u " +
-                    "ON p.id_user = u.id_user " +
+                        MySqlDataAdapter adapter =
+                            new MySqlDataAdapter(cmd);
 
-                    "INNER JOIN detail_pesanan d " +
-                    "ON p.id_pesanan = d.id_pesanan " +
+                        DataTable dt = new DataTable();
 
-                    "INNER JOIN barang b " +
-                    "ON d.id_barang = b.id_barang " +
+                        adapter.Fill(dt);
 
-                    "WHERE " +
-                    "CAST(p.id_pesanan AS CHAR) LIKE @cari " +
-                    "OR u.nama LIKE @cari " +
-                    "OR b.nama_barang LIKE @cari " +
-                    "OR p.status LIKE @cari " +
+                        dgvPesanan.DataSource = dt;
+                    }
+                }
 
-                    "ORDER BY p.id_pesanan DESC";
+                // Sembunyikan ID Pesanan
+                if (dgvPesanan.Columns.Contains("ID Pesanan"))
+                {
+                    dgvPesanan.Columns["ID Pesanan"].Visible = false;
+                }
 
+                // Hapus No yang lama
+                if (dgvPesanan.Columns.Contains("No"))
+                {
+                    dgvPesanan.Columns.Remove("No");
+                }
 
-                MySqlCommand command =
-                    new MySqlCommand(
-                        query,
-                        connection
-                    );
+                // Tambahkan kolom No
+                DataGridViewTextBoxColumn kolomNo =
+                    new DataGridViewTextBoxColumn();
 
+                kolomNo.Name = "No";
+                kolomNo.HeaderText = "No";
+                kolomNo.ReadOnly = true;
+                kolomNo.Width = 50;
 
-                command.Parameters.AddWithValue(
-                    "@cari",
-                    "%" + kataKunci + "%"
-                );
+                dgvPesanan.Columns.Insert(0, kolomNo);
 
-
-                MySqlDataAdapter adapter =
-                    new MySqlDataAdapter(
-                        command
-                    );
-
-
-                DataTable table =
-                    new DataTable();
-
-
-                adapter.Fill(table);
-
-
-                dgvPesanan.DataSource =
-                    null;
-
-                dgvPesanan.DataSource =
-                    table;
-
+                // Nomor urut mulai dari 1
+                for (int i = 0; i < dgvPesanan.Rows.Count; i++)
+                {
+                    dgvPesanan.Rows[i].Cells["No"].Value = i + 1;
+                }
 
                 // Format harga
-
                 if (dgvPesanan.Columns.Contains("Harga"))
                 {
                     dgvPesanan.Columns["Harga"]
-                        .DefaultCellStyle.Format =
-                        "N0";
+                        .DefaultCellStyle.Format = "N0";
                 }
 
-
                 // Format subtotal
-
                 if (dgvPesanan.Columns.Contains("Subtotal"))
                 {
                     dgvPesanan.Columns["Subtotal"]
-                        .DefaultCellStyle.Format =
-                        "N0";
+                        .DefaultCellStyle.Format = "N0";
                 }
 
-
-                // Format tanggal
-
-                if (dgvPesanan.Columns.Contains("Tanggal Pesanan"))
+                // Jika tidak ada hasil
+                if (dgvPesanan.Rows.Count == 0)
                 {
-                    dgvPesanan.Columns["Tanggal Pesanan"]
-                        .DefaultCellStyle.Format =
-                        "dd-MM-yyyy HH:mm";
+                    MessageBox.Show(
+                        "Data pesanan tidak ditemukan.",
+                        "Informasi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
-
-
-                dgvPesanan.ClearSelection();
             }
             catch (Exception ex)
             {
@@ -318,18 +341,9 @@ namespace PemesananBarang
                     ex.Message,
                     "Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                }
+                    MessageBoxIcon.Error);
             }
         }
-
 
         // =====================================
         // BUTTON CARI
@@ -756,6 +770,303 @@ namespace PemesananBarang
         private void btnKembali_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnCari_Click_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvPesanan_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void btnCari_Click_3(object sender, EventArgs e)
+        {
+            CariPesanan();
+        }
+
+        private void btnUpdateStatus_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnUpdateStatus_Click_1(
+             object sender,
+             EventArgs e
+         )
+        {
+            // Cek apakah ada pesanan yang dipilih
+            if (dgvPesanan.SelectedRows.Count == 0)
+            {
+                MessageBox.Show(
+                    "Silakan pilih pesanan yang ingin diubah.",
+                    "Peringatan",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            // Cek status
+            if (cmbUpdateStatus.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "Silakan pilih status terlebih dahulu.",
+                    "Peringatan",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            try
+            {
+                // Ambil ID Pesanan dari baris yang dipilih
+                int idPesanan = Convert.ToInt32(
+                    dgvPesanan.SelectedRows[0]
+                    .Cells["ID Pesanan"].Value);
+
+                string statusBaru =
+                    cmbUpdateStatus.SelectedItem.ToString();
+
+                using (MySqlConnection conn =
+                    Koneksi.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"
+                UPDATE pesanan
+                SET status = @status
+                WHERE id_pesanan = @id_pesanan";
+
+                    using (MySqlCommand cmd =
+                        new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue(
+                            "@status",
+                            statusBaru);
+
+                        cmd.Parameters.AddWithValue(
+                            "@id_pesanan",
+                            idPesanan);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show(
+                    "Status pesanan berhasil diperbarui.",
+                    "Berhasil",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                // Tampilkan data terbaru
+                LoadPesanan();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Gagal mengubah status pesanan.\n\n" +
+                    ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnHapusPesanan_Click(object sender, EventArgs e)
+        {
+            {
+                // Cek apakah ada data yang dipilih
+                if (dgvPesanan.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show(
+                        "Silakan pilih pesanan yang ingin dihapus.",
+                        "Peringatan",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                try
+                {
+                    int idPesanan = Convert.ToInt32(
+                        dgvPesanan.SelectedRows[0]
+                        .Cells["ID Pesanan"].Value);
+
+                    string namaPemesan =
+                        dgvPesanan.SelectedRows[0]
+                        .Cells["Nama Pemesan"].Value.ToString();
+
+                    DialogResult konfirmasi = MessageBox.Show(
+                        "Apakah kamu yakin ingin menghapus pesanan:\n\n" +
+                        "Nama Pemesan : " + namaPemesan,
+                        "Konfirmasi Hapus",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (konfirmasi != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    using (MySqlConnection conn =
+                        Koneksi.GetConnection())
+                    {
+                        conn.Open();
+
+                        MySqlTransaction transaksi =
+                            conn.BeginTransaction();
+
+                        try
+                        {
+                            // =================================================
+                            // 1. Ambil barang dan jumlah pesanan
+                            // =================================================
+
+                            string queryDetail = @"
+                    SELECT id_barang, jumlah
+                    FROM detail_pesanan
+                    WHERE id_pesanan = @id_pesanan";
+
+                            DataTable detail = new DataTable();
+
+                            using (MySqlCommand cmd =
+                                new MySqlCommand(
+                                    queryDetail,
+                                    conn,
+                                    transaksi))
+                            {
+                                cmd.Parameters.AddWithValue(
+                                    "@id_pesanan",
+                                    idPesanan);
+
+                                MySqlDataAdapter adapter =
+                                    new MySqlDataAdapter(cmd);
+
+                                adapter.Fill(detail);
+                            }
+
+                            // =================================================
+                            // 2. Kembalikan stok barang
+                            // =================================================
+
+                            foreach (DataRow row in detail.Rows)
+                            {
+                                int idBarang =
+                                    Convert.ToInt32(row["id_barang"]);
+
+                                int jumlah =
+                                    Convert.ToInt32(row["jumlah"]);
+
+                                string queryStok = @"
+                        UPDATE barang
+                        SET stok = stok + @jumlah
+                        WHERE id_barang = @id_barang";
+
+                                using (MySqlCommand cmd =
+                                    new MySqlCommand(
+                                        queryStok,
+                                        conn,
+                                        transaksi))
+                                {
+                                    cmd.Parameters.AddWithValue(
+                                        "@jumlah",
+                                        jumlah);
+
+                                    cmd.Parameters.AddWithValue(
+                                        "@id_barang",
+                                        idBarang);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            // =================================================
+                            // 3. Hapus detail pesanan
+                            // =================================================
+
+                            string queryHapusDetail = @"
+                    DELETE FROM detail_pesanan
+                    WHERE id_pesanan = @id_pesanan";
+
+                            using (MySqlCommand cmd =
+                                new MySqlCommand(
+                                    queryHapusDetail,
+                                    conn,
+                                    transaksi))
+                            {
+                                cmd.Parameters.AddWithValue(
+                                    "@id_pesanan",
+                                    idPesanan);
+
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // =================================================
+                            // 4. Hapus data pesanan
+                            // =================================================
+
+                            string queryHapusPesanan = @"
+                    DELETE FROM pesanan
+                    WHERE id_pesanan = @id_pesanan";
+
+                            using (MySqlCommand cmd =
+                                new MySqlCommand(
+                                    queryHapusPesanan,
+                                    conn,
+                                    transaksi))
+                            {
+                                cmd.Parameters.AddWithValue(
+                                    "@id_pesanan",
+                                    idPesanan);
+
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // =================================================
+                            // 5. Simpan transaksi
+                            // =================================================
+
+                            transaksi.Commit();
+
+                            MessageBox.Show(
+                                "Pesanan berhasil dihapus.",
+                                "Berhasil",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+
+                            // Refresh DGV
+                            LoadPesanan();
+                        }
+                        catch
+                        {
+                            transaksi.Rollback();
+                            throw;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "Gagal menghapus pesanan.\n\n" +
+                        ex.Message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnTampilkan_Click(object sender, EventArgs e)
+        {
+
+            txtCari.Clear();
+            LoadPesanan();
+
         }
     }
 }

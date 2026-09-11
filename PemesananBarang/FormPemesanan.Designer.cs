@@ -51,7 +51,6 @@ namespace PemesananBarang
             this.dgvPesanan = new System.Windows.Forms.DataGridView();
             this.lblDataPesanan = new System.Windows.Forms.Label();
             this.btnHapusPesanan = new System.Windows.Forms.Button();
-            this.btnKembali = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numJumlah)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPesanan)).BeginInit();
             this.SuspendLayout();
@@ -109,9 +108,9 @@ namespace PemesananBarang
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(70, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 13);
+            this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 9;
-            this.label1.Text = "Nama Pemesan";
+            this.label1.Text = "Nama Pemesanan";
             // 
             // label2
             // 
@@ -204,6 +203,7 @@ namespace PemesananBarang
             this.lblStatus.Size = new System.Drawing.Size(66, 13);
             this.lblStatus.TabIndex = 19;
             this.lblStatus.Text = "Ubah Status";
+            this.lblStatus.Click += new System.EventHandler(this.lblStatus_Click);
             // 
             // cmbUpdateStatus
             // 
@@ -219,6 +219,7 @@ namespace PemesananBarang
             this.cmbUpdateStatus.Name = "cmbUpdateStatus";
             this.cmbUpdateStatus.Size = new System.Drawing.Size(121, 21);
             this.cmbUpdateStatus.TabIndex = 20;
+            this.cmbUpdateStatus.SelectedIndexChanged += new System.EventHandler(this.cmbUpdateStatus_SelectedIndexChanged);
             // 
             // btnUpdateStatus
             // 
@@ -241,7 +242,7 @@ namespace PemesananBarang
             this.dgvPesanan.Name = "dgvPesanan";
             this.dgvPesanan.ReadOnly = true;
             this.dgvPesanan.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvPesanan.Size = new System.Drawing.Size(538, 221);
+            this.dgvPesanan.Size = new System.Drawing.Size(562, 221);
             this.dgvPesanan.TabIndex = 22;
             this.dgvPesanan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPesanan_CellContentClick);
             // 
@@ -264,22 +265,11 @@ namespace PemesananBarang
             this.btnHapusPesanan.UseVisualStyleBackColor = true;
             this.btnHapusPesanan.Click += new System.EventHandler(this.btnHapusPesanan_Click);
             // 
-            // btnKembali
-            // 
-            this.btnKembali.Location = new System.Drawing.Point(470, 362);
-            this.btnKembali.Name = "btnKembali";
-            this.btnKembali.Size = new System.Drawing.Size(155, 23);
-            this.btnKembali.TabIndex = 25;
-            this.btnKembali.Text = "KEMBALI";
-            this.btnKembali.UseVisualStyleBackColor = true;
-            this.btnKembali.Click += new System.EventHandler(this.btnKembali_Click);
-            // 
             // FormPemesanan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 543);
-            this.Controls.Add(this.btnKembali);
+            this.ClientSize = new System.Drawing.Size(800, 543);
             this.Controls.Add(this.btnHapusPesanan);
             this.Controls.Add(this.lblDataPesanan);
             this.Controls.Add(this.dgvPesanan);
@@ -335,6 +325,5 @@ namespace PemesananBarang
         private System.Windows.Forms.DataGridView dgvPesanan;
         private System.Windows.Forms.Label lblDataPesanan;
         private System.Windows.Forms.Button btnHapusPesanan;
-        private System.Windows.Forms.Button btnKembali;
     }
 }

@@ -35,6 +35,11 @@ namespace PemesananBarang
             this.btnCari = new System.Windows.Forms.Button();
             this.dgvPesanan = new System.Windows.Forms.DataGridView();
             this.btnKembali = new System.Windows.Forms.Button();
+            this.btnHapusPesanan = new System.Windows.Forms.Button();
+            this.btnUpdateStatus = new System.Windows.Forms.Button();
+            this.cmbUpdateStatus = new System.Windows.Forms.ComboBox();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.btnTampilkan = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPesanan)).BeginInit();
             this.SuspendLayout();
             // 
@@ -51,7 +56,7 @@ namespace PemesananBarang
             // lblCari
             // 
             this.lblCari.AutoSize = true;
-            this.lblCari.Location = new System.Drawing.Point(134, 92);
+            this.lblCari.Location = new System.Drawing.Point(24, 122);
             this.lblCari.Name = "lblCari";
             this.lblCari.Size = new System.Drawing.Size(70, 13);
             this.lblCari.TabIndex = 1;
@@ -59,20 +64,20 @@ namespace PemesananBarang
             // 
             // txtCari
             // 
-            this.txtCari.Location = new System.Drawing.Point(137, 119);
+            this.txtCari.Location = new System.Drawing.Point(100, 122);
             this.txtCari.Name = "txtCari";
             this.txtCari.Size = new System.Drawing.Size(187, 20);
             this.txtCari.TabIndex = 2;
             // 
             // btnCari
             // 
-            this.btnCari.Location = new System.Drawing.Point(336, 119);
+            this.btnCari.Location = new System.Drawing.Point(305, 122);
             this.btnCari.Name = "btnCari";
             this.btnCari.Size = new System.Drawing.Size(75, 23);
             this.btnCari.TabIndex = 3;
             this.btnCari.Text = "CARI";
             this.btnCari.UseVisualStyleBackColor = true;
-            this.btnCari.Click += new System.EventHandler(this.btnCari_Click_1);
+            this.btnCari.Click += new System.EventHandler(this.btnCari_Click_3);
             // 
             // dgvPesanan
             // 
@@ -85,22 +90,82 @@ namespace PemesananBarang
             this.dgvPesanan.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvPesanan.Size = new System.Drawing.Size(804, 150);
             this.dgvPesanan.TabIndex = 4;
+            this.dgvPesanan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPesanan_CellContentClick);
             // 
             // btnKembali
             // 
-            this.btnKembali.Location = new System.Drawing.Point(430, 119);
+            this.btnKembali.Location = new System.Drawing.Point(386, 122);
             this.btnKembali.Name = "btnKembali";
-            this.btnKembali.Size = new System.Drawing.Size(155, 23);
+            this.btnKembali.Size = new System.Drawing.Size(74, 23);
             this.btnKembali.TabIndex = 26;
             this.btnKembali.Text = "KEMBALI";
             this.btnKembali.UseVisualStyleBackColor = true;
             this.btnKembali.Click += new System.EventHandler(this.btnKembali_Click);
+            // 
+            // btnHapusPesanan
+            // 
+            this.btnHapusPesanan.Location = new System.Drawing.Point(250, 409);
+            this.btnHapusPesanan.Name = "btnHapusPesanan";
+            this.btnHapusPesanan.Size = new System.Drawing.Size(168, 23);
+            this.btnHapusPesanan.TabIndex = 30;
+            this.btnHapusPesanan.Text = "HAPUS PESANAN";
+            this.btnHapusPesanan.UseVisualStyleBackColor = true;
+            this.btnHapusPesanan.Click += new System.EventHandler(this.btnHapusPesanan_Click);
+            // 
+            // btnUpdateStatus
+            // 
+            this.btnUpdateStatus.Location = new System.Drawing.Point(250, 380);
+            this.btnUpdateStatus.Name = "btnUpdateStatus";
+            this.btnUpdateStatus.Size = new System.Drawing.Size(168, 23);
+            this.btnUpdateStatus.TabIndex = 29;
+            this.btnUpdateStatus.Text = "UPDATE STATUS";
+            this.btnUpdateStatus.UseVisualStyleBackColor = true;
+            this.btnUpdateStatus.Click += new System.EventHandler(this.btnUpdateStatus_Click_1);
+            // 
+            // cmbUpdateStatus
+            // 
+            this.cmbUpdateStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbUpdateStatus.FormattingEnabled = true;
+            this.cmbUpdateStatus.Items.AddRange(new object[] {
+            "Menunggu",
+            "",
+            "Diproses",
+            "",
+            "Selesai"});
+            this.cmbUpdateStatus.Location = new System.Drawing.Point(111, 380);
+            this.cmbUpdateStatus.Name = "cmbUpdateStatus";
+            this.cmbUpdateStatus.Size = new System.Drawing.Size(121, 21);
+            this.cmbUpdateStatus.TabIndex = 28;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(24, 383);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(66, 13);
+            this.lblStatus.TabIndex = 27;
+            this.lblStatus.Text = "Ubah Status";
+            // 
+            // btnTampilkan
+            // 
+            this.btnTampilkan.Location = new System.Drawing.Point(466, 122);
+            this.btnTampilkan.Name = "btnTampilkan";
+            this.btnTampilkan.Size = new System.Drawing.Size(74, 23);
+            this.btnTampilkan.TabIndex = 31;
+            this.btnTampilkan.Text = "Tampikan";
+            this.btnTampilkan.UseVisualStyleBackColor = true;
+            this.btnTampilkan.Click += new System.EventHandler(this.btnTampilkan_Click);
             // 
             // FormPesanan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnTampilkan);
+            this.Controls.Add(this.btnHapusPesanan);
+            this.Controls.Add(this.btnUpdateStatus);
+            this.Controls.Add(this.cmbUpdateStatus);
+            this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.btnKembali);
             this.Controls.Add(this.dgvPesanan);
             this.Controls.Add(this.btnCari);
@@ -125,5 +190,10 @@ namespace PemesananBarang
         private System.Windows.Forms.Button btnCari;
         private System.Windows.Forms.DataGridView dgvPesanan;
         private System.Windows.Forms.Button btnKembali;
+        private System.Windows.Forms.Button btnHapusPesanan;
+        private System.Windows.Forms.Button btnUpdateStatus;
+        private System.Windows.Forms.ComboBox cmbUpdateStatus;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Button btnTampilkan;
     }
 }

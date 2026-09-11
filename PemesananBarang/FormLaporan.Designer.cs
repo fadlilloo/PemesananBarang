@@ -36,8 +36,9 @@ namespace PemesananBarang
             this.lblTanggalAkhir = new System.Windows.Forms.Label();
             this.dtpTanggalAkhir = new System.Windows.Forms.DateTimePicker();
             this.btnTampilkan = new System.Windows.Forms.Button();
-            this.crystalReportViewer1 = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
             this.btnKembali = new System.Windows.Forms.Button();
+            this.dgvLaporan = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLaporan)).BeginInit();
             this.SuspendLayout();
             // 
             // lblJudul
@@ -90,7 +91,7 @@ namespace PemesananBarang
             this.dtpTanggalAkhir.Name = "dtpTanggalAkhir";
             this.dtpTanggalAkhir.Size = new System.Drawing.Size(200, 20);
             this.dtpTanggalAkhir.TabIndex = 5;
-            this.dtpTanggalAkhir.ValueChanged += new System.EventHandler(this.dtpTanggalAkhir_ValueChanged_1);
+            this.dtpTanggalAkhir.ValueChanged += new System.EventHandler(this.dtpTanggalAkhir_ValueChanged);
             // 
             // btnTampilkan
             // 
@@ -102,17 +103,6 @@ namespace PemesananBarang
             this.btnTampilkan.UseVisualStyleBackColor = true;
             this.btnTampilkan.Click += new System.EventHandler(this.btnTampilkan_Click_1);
             // 
-            // crystalReportViewer1
-            // 
-            this.crystalReportViewer1.ActiveViewIndex = -1;
-            this.crystalReportViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.crystalReportViewer1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.crystalReportViewer1.Location = new System.Drawing.Point(51, 263);
-            this.crystalReportViewer1.Name = "crystalReportViewer1";
-            this.crystalReportViewer1.Size = new System.Drawing.Size(737, 150);
-            this.crystalReportViewer1.TabIndex = 7;
-            this.crystalReportViewer1.Load += new System.EventHandler(this.crystalReportViewer1_Load);
-            // 
             // btnKembali
             // 
             this.btnKembali.Location = new System.Drawing.Point(261, 429);
@@ -123,13 +113,22 @@ namespace PemesananBarang
             this.btnKembali.UseVisualStyleBackColor = true;
             this.btnKembali.Click += new System.EventHandler(this.btnKembali_Click_1);
             // 
+            // dgvLaporan
+            // 
+            this.dgvLaporan.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvLaporan.Location = new System.Drawing.Point(0, 275);
+            this.dgvLaporan.Name = "dgvLaporan";
+            this.dgvLaporan.Size = new System.Drawing.Size(788, 130);
+            this.dgvLaporan.TabIndex = 10;
+            this.dgvLaporan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLaporan_CellContentClick);
+            // 
             // FormLaporan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.dgvLaporan);
             this.Controls.Add(this.btnKembali);
-            this.Controls.Add(this.crystalReportViewer1);
             this.Controls.Add(this.btnTampilkan);
             this.Controls.Add(this.dtpTanggalAkhir);
             this.Controls.Add(this.lblTanggalAkhir);
@@ -140,6 +139,7 @@ namespace PemesananBarang
             this.Name = "FormLaporan";
             this.Text = "FormLaporan";
             this.Load += new System.EventHandler(this.FormLaporan_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLaporan)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,7 +154,7 @@ namespace PemesananBarang
         private System.Windows.Forms.Label lblTanggalAkhir;
         private System.Windows.Forms.DateTimePicker dtpTanggalAkhir;
         private System.Windows.Forms.Button btnTampilkan;
-        private CrystalDecisions.Windows.Forms.CrystalReportViewer crystalReportViewer1;
         private System.Windows.Forms.Button btnKembali;
+        private System.Windows.Forms.DataGridView dgvLaporan;
     }
 }

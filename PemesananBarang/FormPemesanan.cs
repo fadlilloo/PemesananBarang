@@ -52,7 +52,7 @@ namespace PemesananBarang
                 string query =
                     "SELECT " +
                     "p.id_pesanan AS 'ID Pesanan', " +
-                    "u.nama AS 'Nama Pemesan', " +
+                    "p.nama_pemesan AS 'Nama Pemesan', " +
                     "b.nama_barang AS 'Nama Barang', " +
                     "dp.jumlah AS 'Jumlah', " +
                     "dp.harga AS 'Harga', " +
@@ -61,16 +61,13 @@ namespace PemesananBarang
 
                     "FROM pesanan p " +
 
-                    "INNER JOIN users u " +
-                    "ON p.id_user = u.id_user " +
-
                     "INNER JOIN detail_pesanan dp " +
                     "ON p.id_pesanan = dp.id_pesanan " +
 
                     "INNER JOIN barang b " +
                     "ON dp.id_barang = b.id_barang " +
 
-                    "ORDER BY p.id_pesanan DESC";
+                    "ORDER BY p.id_pesanan ASC";
 
 
                 MySqlDataAdapter adapter =
@@ -79,24 +76,77 @@ namespace PemesananBarang
                         connection
                     );
 
-
                 DataTable table =
                     new DataTable();
-
 
                 adapter.Fill(table);
 
 
-                // Bersihkan DataGridView
+                // ==============================
+                // TAMPILKAN DATA
+                // ==============================
+
                 dgvPesanan.DataSource = null;
 
-
-                // Tampilkan data
-                dgvPesanan.DataSource =
-                    table;
+                dgvPesanan.DataSource = table;
 
 
-                // Pengaturan tampilan
+                // ==============================
+                // TAMBAHKAN KOLOM NO
+                // ==============================
+
+                if (!dgvPesanan.Columns.Contains("No"))
+                {
+                    DataGridViewTextBoxColumn kolomNo =
+                        new DataGridViewTextBoxColumn();
+
+                    kolomNo.Name = "No";
+                    kolomNo.HeaderText = "No";
+                    kolomNo.ReadOnly = true;
+
+                    dgvPesanan.Columns.Insert(
+                        0,
+                        kolomNo
+                    );
+                }
+
+
+                // ==============================
+                // ISI NOMOR 1, 2, 3, DST
+                // ==============================
+
+                for (
+                    int i = 0;
+                    i < dgvPesanan.Rows.Count;
+                    i++
+                )
+                {
+                    dgvPesanan.Rows[i]
+                        .Cells["No"]
+                        .Value = i + 1;
+                }
+
+
+                // ==============================
+                // SEMBUNYIKAN ID PESANAN
+                // ==============================
+
+                if (
+                    dgvPesanan.Columns.Contains(
+                        "ID Pesanan"
+                    )
+                )
+                {
+                    dgvPesanan.Columns[
+                        "ID Pesanan"
+                    ].Visible = false;
+                }
+
+
+                // ==============================
+                // ATUR DATAGRIDVIEW
+                // ==============================
+
                 dgvPesanan.AutoSizeColumnsMode =
                     DataGridViewAutoSizeColumnsMode.Fill;
 
@@ -110,6 +160,12 @@ namespace PemesananBarang
                     true;
 
                 dgvPesanan.AllowUserToAddRows =
+                    false;
+
+                dgvPesanan.AllowUserToDeleteRows =
+                    false;
+
+                dgvPesanan.AllowUserToResizeRows =
                     false;
 
                 dgvPesanan.ClearSelection();
@@ -646,10 +702,10 @@ namespace PemesananBarang
                     // =================================
 
                     string queryPesanan =
-                        "INSERT INTO pesanan " +
-                        "(id_user, tanggal_pesanan, total_harga, status) " +
-                        "VALUES " +
-                        "(@id_user, NOW(), @total_harga, @status)";
+                       "INSERT INTO pesanan " +
+    "(id_user, nama_pemesan, tanggal_pesanan, total_harga, status) " +
+    "VALUES " +
+    "(@id_user, @nama_pemesan, NOW(), @total_harga, @status)";
 
 
                     MySqlCommand cmdPesanan =
@@ -667,6 +723,12 @@ namespace PemesananBarang
 
 
                     cmdPesanan.Parameters.AddWithValue(
+                        "@nama_pemesan",
+                        txtNamaPemesan.Text.Trim()
+                    );
+
+
+                    cmdPesanan.Parameters.AddWithValue(
                         "@total_harga",
                         subtotal
                     );
@@ -676,7 +738,6 @@ namespace PemesananBarang
                         "@status",
                         status
                     );
-
 
                     cmdPesanan.ExecuteNonQuery();
 
@@ -1277,9 +1338,14 @@ namespace PemesananBarang
         {
         }
 
-        private void btnKembali_Click(object sender, EventArgs e)
+        private void cmbUpdateStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.Close();
+
+        }
+
+        private void lblStatus_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
